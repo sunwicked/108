@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_margin="@dimen/margin_tiny"
+    card_view:cardCornerRadius="@dimen/margin_tiny"
+    card_view:contentPadding="5dp">
+
+    <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_movie"
+            android:layout_width="100dp"
+            android:layout_height="150dp"
+            android:layout_margin="@dimen/margin_tiny" />
+
+        <TextView
+            android:id="@+id/tv_movie_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/iv_movie"
+            android:ellipsize="marquee"
+            android:textAppearance="@android:style/TextAppearance.Large"
+            android:textStyle="bold"
+            tools:text="Superman" />
+
+        <LinearLayout
+            android:id="@+id/ll_ratings_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_movie_title"
+            android:layout_toRightOf="@id/iv_movie"
+            android:divider="@drawable/mid_seperator"
+            android:gravity="right"
+            android:showDividers="middle">
+
+            <TextView
+                android:id="@+id/tv_release_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                tools:text="23/12/2016" />
+
+
+            <TextView
+                android:id="@+id/tv_vote_Count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                tools:text="1643" />
+
+            <TextView
+                android:id="@+id/tv_popularity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold"
+                tools:text="42.42" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ll_ratings_parent"
+            android:layout_toRightOf="@id/iv_movie"
+            android:maxLength="150" />
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
