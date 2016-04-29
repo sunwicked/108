@@ -43,7 +43,8 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
         holder.moviePopularityTv.setText(Double.toString(movie.getPopularity()));
         holder.movieVoteCountTv.setText(Integer.toString(movie.getVoteCount()));
         holder.movieOverviewTv.setText(movie.getOverview());
-        Picasso.with(mContext).load(movie.getPosterPath()).into(holder.movieIv);
+        Picasso.with(mContext).load(movie.getPosterPath())
+                .into(holder.movieIv);
     }
 
 

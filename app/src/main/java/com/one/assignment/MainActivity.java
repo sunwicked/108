@@ -32,7 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private static final boolean FAIL = false;
     private static final boolean SUCCESS = true;
 
+
     private OkHttpClient client = new OkHttpClient();
+    MovieFeed feed;
     private Gson gson = new Gson();
     private RecyclerView.LayoutManager mLayoutManager;
 
@@ -41,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setViews();
+        if (null != savedInstanceState) {
+            feed = savedInstanceState.getParcelable("key");
+        }
         try {
             setFeed();
         } catch (IOException e) {
@@ -60,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     private void setViews() {
         mStatusTv = (TextView) findViewById(R.id.tv_status);
         mStatusTv.setVisibility(View.VISIBLE);
@@ -71,7 +77,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setFeed() throws IOException {
-        if (ConnectionDetector.isConnectingToInternet(this)) {
+        if (null != feed) {
+            bindData();
+        } else if (ConnectionDetector.isConnectingToInternet(this)) {
+            feed = new MovieFeed();
             mStatusTv.setText(getResources().getString(R.string.loading));
             Log.d(TAG, "setFeed:" + "network available");
             new AsyncStart().execute();
@@ -85,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public class AsyncStart extends AsyncTask<Void, Void, Boolean> {
-        MovieFeed feed = new MovieFeed();
+
 
         @Override
         protected void onPreExecute() {
@@ -120,13 +129,23 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             if (result) {
-                //bind data
-                mStatusTv.setVisibility(View.INVISIBLE);
-                FeedRecyclerViewAdapter mFeedAdapter = new FeedRecyclerViewAdapter(MainActivity.this, feed.getResults());
-                mMovieFeedRv.setAdapter(mFeedAdapter);
+                bindData();
             }
         }
     }
 
+    private void bindData() {
+        mStatusTv.setVisibility(View.INVISIBLE);
+        FeedRecyclerViewAdapter mFeedAdapter = new FeedRecyclerViewAdapter(MainActivity.this, feed.getResults());
+        mMovieFeedRv.setAdapter(mFeedAdapter);
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (null != feed)
+            outState.putParcelable("key", feed);
+    }
 
 }
