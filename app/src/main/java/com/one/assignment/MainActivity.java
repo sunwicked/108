@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import com.one.assignement.R;
 import com.one.assignment.adapters.FeedRecyclerViewAdapter;
 import com.one.assignment.models.MovieFeed;
+import com.one.assignment.utils.AppPreferences;
 import com.one.assignment.utils.ConnectionDetector;
 import com.one.assignment.utils.Log;
 
@@ -34,9 +35,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private OkHttpClient client = new OkHttpClient();
-    MovieFeed feed;
+    private MovieFeed feed;
     private Gson gson = new Gson();
     private RecyclerView.LayoutManager mLayoutManager;
+    private AppPreferences appPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +46,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setViews();
         if (null != savedInstanceState) {
-            feed = savedInstanceState.getParcelable("key");
+            feed = savedInstanceState.getParcelable(LabConstants.KEY);
         }
+        appPreferences = new AppPreferences(this);
         try {
             setFeed();
         } catch (IOException e) {
@@ -85,10 +88,17 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "setFeed:" + "network available");
             new AsyncStart().execute();
         } else {
-            // network not available
-            mStatusTv.setText(getResources().getString(R.string.no_network));
-            ObjectAnimator.ofFloat(mStatusTv, "translationX", -10, 0, 10, 0).start();
-            Log.d(TAG, "setFeed:" + "network not available");
+            String data = appPreferences.getPreference(LabConstants.KEY_LOCAL, null);
+            if (data == null) {
+                mStatusTv.setText(getResources().getString(R.string.no_network));
+                ObjectAnimator.ofFloat(mStatusTv, "translationX", -10, 0, 10, 0).start();
+                Log.d(TAG, "setFeed:" + "network not available");
+            }
+            {
+                mStatusTv.setText(getResources().getString(R.string.local_data));
+                feed = gson.fromJson(data, MovieFeed.class);
+                setFeed();
+            }
         }
     }
 
@@ -130,9 +140,16 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(result);
             if (result) {
                 bindData();
+                saveDataToLocalDB(feed);
             }
         }
     }
+
+    private void saveDataToLocalDB(MovieFeed feed) {
+        String localFeed = gson.toJson(feed);
+        appPreferences.applyPreference(LabConstants.KEY_LOCAL, localFeed);
+    }
+
 
     private void bindData() {
         mStatusTv.setVisibility(View.INVISIBLE);
@@ -145,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (null != feed)
-            outState.putParcelable("key", feed);
+            outState.putParcelable(LabConstants.KEY, feed);
     }
 
 }

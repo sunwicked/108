@@ -2,4 +2,5 @@
     <string name="app_name">108assignement</string>
     <string name="loading">Loading Data</string>
     <string name="no_network">Network not detected</string>
+    <string name="local_data">Fetching Local Data</string>
 </resources>
