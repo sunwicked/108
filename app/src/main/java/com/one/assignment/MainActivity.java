@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.one.assignement.R;
 import com.one.assignment.adapters.FeedRecyclerViewAdapter;
+import com.one.assignment.database.DbManager;
 import com.one.assignment.models.MovieFeed;
 import com.one.assignment.utils.AppPreferences;
 import com.one.assignment.utils.ConnectionDetector;
@@ -37,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private OkHttpClient client = new OkHttpClient();
     private MovieFeed feed;
     private Gson gson = new Gson();
-    private RecyclerView.LayoutManager mLayoutManager;
     private AppPreferences appPreferences;
+    private DbManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             feed = savedInstanceState.getParcelable(LabConstants.KEY);
         }
         appPreferences = new AppPreferences(this);
+        dbManager = new DbManager(this);
         try {
             setFeed();
         } catch (IOException e) {
@@ -73,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         mStatusTv = (TextView) findViewById(R.id.tv_status);
         mStatusTv.setVisibility(View.VISIBLE);
         mMovieFeedRv = (RecyclerView) findViewById(R.id.rv_feed);
-        mLayoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         mMovieFeedRv.setLayoutManager(mLayoutManager);
 
     }
@@ -96,7 +98,9 @@ public class MainActivity extends AppCompatActivity {
             }
             {
                 mStatusTv.setText(getResources().getString(R.string.local_data));
-                feed = gson.fromJson(data, MovieFeed.class);
+                feed = new MovieFeed();
+                feed.setResults(dbManager.fetchAll());
+                //feed = gson.fromJson(data, MovieFeed.class);
                 setFeed();
             }
         }
@@ -147,7 +151,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void saveDataToLocalDB(MovieFeed feed) {
         String localFeed = gson.toJson(feed);
-        appPreferences.applyPreference(LabConstants.KEY_LOCAL, localFeed);
+        //saving json to preference
+        //appPreferences.applyPreference(LabConstants.KEY_LOCAL, localFeed);
+        // Saving feed to db
+        dbManager.insertAll(feed.getResults());
+
     }
 
 
