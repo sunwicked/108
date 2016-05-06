@@ -1,7 +1,6 @@
 package com.one.assignment;
 
 import android.animation.ObjectAnimator;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -10,35 +9,28 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.one.assignement.R;
 import com.one.assignment.adapters.FeedRecyclerViewAdapter;
 import com.one.assignment.database.DbManager;
+import com.one.assignment.listeners.DownloaderListener;
 import com.one.assignment.models.MovieFeed;
-import com.one.assignment.utils.AppPreferences;
+import com.one.assignment.models.Result;
+import com.one.assignment.utils.AsyncStart;
 import com.one.assignment.utils.ConnectionDetector;
 import com.one.assignment.utils.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DownloaderListener {
 
     private TextView mStatusTv;
     private RecyclerView mMovieFeedRv;
 
     private static final String TAG = "MainActivity";
-    private static final boolean FAIL = false;
-    private static final boolean SUCCESS = true;
 
 
-    private OkHttpClient client = new OkHttpClient();
     private MovieFeed feed;
-    private Gson gson = new Gson();
-    private AppPreferences appPreferences;
     private DbManager dbManager;
 
     @Override
@@ -49,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         if (null != savedInstanceState) {
             feed = savedInstanceState.getParcelable(LabConstants.KEY);
         }
-        appPreferences = new AppPreferences(this);
         dbManager = new DbManager(this);
         try {
             setFeed();
@@ -88,74 +79,45 @@ public class MainActivity extends AppCompatActivity {
             feed = new MovieFeed();
             mStatusTv.setText(getResources().getString(R.string.loading));
             Log.d(TAG, "setFeed:" + "network available");
-            new AsyncStart().execute();
+            AsyncStart asyncStart = new AsyncStart(this);
+            asyncStart.execute();
         } else {
-            String data = appPreferences.getPreference(LabConstants.KEY_LOCAL, null);
-            if (data == null) {
+
+            mStatusTv.setText(getResources().getString(R.string.local_data));
+            feed = new MovieFeed();
+            ArrayList<Result> localResults = dbManager.fetchAll();
+            if (!localResults.isEmpty()) {
+                feed.setResults(localResults);
+                setFeed();
+            } else {
                 mStatusTv.setText(getResources().getString(R.string.no_network));
                 ObjectAnimator.ofFloat(mStatusTv, "translationX", -10, 0, 10, 0).start();
                 Log.d(TAG, "setFeed:" + "network not available");
             }
-            {
-                mStatusTv.setText(getResources().getString(R.string.local_data));
-                feed = new MovieFeed();
-                feed.setResults(dbManager.fetchAll());
-                //feed = gson.fromJson(data, MovieFeed.class);
-                setFeed();
-            }
+
         }
     }
 
-
-    public class AsyncStart extends AsyncTask<Void, Void, Boolean> {
-
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-            try {
-                feed = getData();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return FAIL;
-            }
-            return SUCCESS;
-        }
-
-        private MovieFeed getData() throws Exception {
-            Request request = new Request.Builder()
-                    .url(LabConstants.LIVE_URL)
-                    .build();
-
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected code " + response);
-            }
-            return gson.fromJson(response.body().string(), MovieFeed.class);
-        }
-
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-            if (result) {
-                bindData();
-                saveDataToLocalDB(feed);
-            }
-        }
+    @Override
+    public void onFinished(MovieFeed feedDownloaded) {
+        feed = feedDownloaded;
+        bindData();
+        saveDataToLocalDB(feed);
     }
+
+    @Override
+    public void onStarted() {
+        mStatusTv.setText(getResources().getString(R.string.loading));
+    }
+
+    @Override
+    public void onFailed() {
+
+    }
+
 
     private void saveDataToLocalDB(MovieFeed feed) {
-        String localFeed = gson.toJson(feed);
-        //saving json to preference
-        //appPreferences.applyPreference(LabConstants.KEY_LOCAL, localFeed);
-        // Saving feed to db
         dbManager.insertAll(feed.getResults());
-
     }
 
 

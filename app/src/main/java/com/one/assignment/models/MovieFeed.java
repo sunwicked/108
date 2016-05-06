@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieFeed implements Parcelable {
+public class MovieFeed  implements Parcelable {
 
     @SerializedName("page")
     @Expose
