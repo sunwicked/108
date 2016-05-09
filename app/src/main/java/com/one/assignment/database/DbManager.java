@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.one.assignment.models.Result;
 
@@ -75,7 +74,6 @@ public class DbManager extends SQLiteOpenHelper {
                 values.put(POSTER, result.getPosterPath());
                 values.put(OVERVIEW, result.getOverview());
                 long x = db.insert(TABLE_RESULT, null, values);
-                Log.e(TAG, "insertAll: " + x);
             }
             return SUCCESS;
         }

@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.one.assignement.R;
+import com.one.assignment.models.MovieFeed;
 import com.one.assignment.models.Result;
 import com.squareup.picasso.Picasso;
 
@@ -22,9 +23,9 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
     private List<Result> mMovieList;
     private Context mContext;
 
-    public FeedRecyclerViewAdapter(Context context, List<Result> feed) {
+    public FeedRecyclerViewAdapter(Context context, MovieFeed feed) {
         mContext = context;
-        mMovieList = feed;
+        mMovieList = feed.getResults();
     }
 
     @Override

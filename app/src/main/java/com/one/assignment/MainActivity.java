@@ -3,15 +3,14 @@ package com.one.assignment;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
 import com.one.assignement.R;
-import com.one.assignment.adapters.FeedRecyclerViewAdapter;
 import com.one.assignment.database.DbManager;
+import com.one.assignment.fragments.FeedFragment;
 import com.one.assignment.listeners.DownloaderListener;
 import com.one.assignment.models.MovieFeed;
 import com.one.assignment.models.Result;
@@ -24,20 +23,17 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements DownloaderListener {
 
-    private TextView mStatusTv;
-    private RecyclerView mMovieFeedRv;
-
     private static final String TAG = "MainActivity";
-
-
     private MovieFeed feed;
     private DbManager dbManager;
+    private  TextView mStatusTv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setViews();
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_refresh);
+        mStatusTv =  (TextView)findViewById(R.id.tv_status);
         if (null != savedInstanceState) {
             feed = savedInstanceState.getParcelable(LabConstants.KEY);
         }
@@ -47,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements DownloaderListene
         } catch (IOException e) {
             e.printStackTrace();
         }
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_refresh);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,20 +57,23 @@ public class MainActivity extends AppCompatActivity implements DownloaderListene
         });
     }
 
-
-    private void setViews() {
-        mStatusTv = (TextView) findViewById(R.id.tv_status);
-        mStatusTv.setVisibility(View.VISIBLE);
-        mMovieFeedRv = (RecyclerView) findViewById(R.id.rv_feed);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
-        mMovieFeedRv.setLayoutManager(mLayoutManager);
-
+    private void setFragment() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        FeedFragment fragment = new FeedFragment();
+        ft.replace(R.id.your_placeholder, fragment);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(LabConstants.KEY_LOCAL, feed);
+        fragment.setArguments(bundle);
+        ft.commit();
     }
+
+
+
 
 
     private void setFeed() throws IOException {
         if (null != feed) {
-            bindData();
+            setFragment();
         } else if (ConnectionDetector.isConnectingToInternet(this)) {
             feed = new MovieFeed();
             mStatusTv.setText(getResources().getString(R.string.loading));
@@ -101,7 +100,11 @@ public class MainActivity extends AppCompatActivity implements DownloaderListene
     @Override
     public void onFinished(MovieFeed feedDownloaded) {
         feed = feedDownloaded;
-        bindData();
+        try {
+            setFeed();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         saveDataToLocalDB(feed);
     }
 
@@ -120,12 +123,6 @@ public class MainActivity extends AppCompatActivity implements DownloaderListene
         dbManager.insertAll(feed.getResults());
     }
 
-
-    private void bindData() {
-        mStatusTv.setVisibility(View.INVISIBLE);
-        FeedRecyclerViewAdapter mFeedAdapter = new FeedRecyclerViewAdapter(MainActivity.this, feed.getResults());
-        mMovieFeedRv.setAdapter(mFeedAdapter);
-    }
 
 
     @Override
