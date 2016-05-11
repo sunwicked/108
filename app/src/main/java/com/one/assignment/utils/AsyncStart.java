@@ -17,7 +17,7 @@ import okhttp3.Response;
 /**
  * Created by Sunny on 06-05-2016.
  */
-public class AsyncStart extends AsyncTask<Void, Void, Boolean> {
+public class AsyncStart extends AsyncTask<Void, Integer, Boolean> {
     private OkHttpClient client = new OkHttpClient();
     private Gson gson = new Gson();
     private MovieFeed feed;
@@ -38,12 +38,20 @@ public class AsyncStart extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Void... voids) {
         try {
+            publishProgress(25);
             feed = getData();
         } catch (Exception e) {
             e.printStackTrace();
             return LabConstants.FAIL;
         }
         return LabConstants.SUCCESS;
+    }
+
+
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+        super.onProgressUpdate(values);
+        mDownloaderListener.onUpdate(values[0]);
     }
 
     private MovieFeed getData() throws Exception {
@@ -55,6 +63,7 @@ public class AsyncStart extends AsyncTask<Void, Void, Boolean> {
         if (!response.isSuccessful()) {
             throw new IOException("Unexpected code " + response);
         }
+        publishProgress(50);
         return gson.fromJson(response.body().string(), MovieFeed.class);
     }
 

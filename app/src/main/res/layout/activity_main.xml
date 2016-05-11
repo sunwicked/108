@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,12 +15,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tv_status"
-            android:layout_width="wrap_content"
+        <com.one.assignment.views.DownloadProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/loading"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            app:barThickness="4dp"
+            app:goalIndicatorHeight="16dp"
+            app:goalIndicatorThickness="4dp"
+            app:goalNotReachedColor="@color/darkGray"
+            app:goalReachedColor="@color/green"
+            app:unfilledSectionColor="@color/gray" />
     </FrameLayout>
 
     <android.support.design.widget.FloatingActionButton

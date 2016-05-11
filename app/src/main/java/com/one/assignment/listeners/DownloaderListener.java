@@ -13,4 +13,6 @@ public interface DownloaderListener {
 
     void onFailed();
 
+    void onUpdate(int progress);
+
 }
