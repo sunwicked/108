@@ -13,6 +13,7 @@ import com.one.assignement.R;
 import com.one.assignment.LabConstants;
 import com.one.assignment.adapters.FeedRecyclerViewAdapter;
 import com.one.assignment.models.MovieFeed;
+import com.one.assignment.utils.AlphaAnimatorAdapter;
 
 /**
  * Created by Sunny on 09-05-2016.
@@ -34,6 +35,8 @@ public class FeedFragment extends Fragment {
 
     }
 
+
+
     // Called when Fragment should create its View hierarchy,
     @Nullable
     @Override
@@ -50,6 +53,9 @@ public class FeedFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mMovieFeedRv = (RecyclerView) view.findViewById(R.id.rv_feed);
+
+
+
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mMovieFeedRv.setLayoutManager(mLayoutManager);
 
@@ -65,7 +71,9 @@ public class FeedFragment extends Fragment {
           if (bundle != null) {
              feed =  bundle.getParcelable(LabConstants.KEY_LOCAL);
               mFeedAdapter = new FeedRecyclerViewAdapter(getContext(), feed);
-              mMovieFeedRv.setAdapter(mFeedAdapter);
+              //mMovieFeedRv.setAdapter(mFeedAdapter);
+              AlphaAnimatorAdapter animatorAdapter = new AlphaAnimatorAdapter(mFeedAdapter, mMovieFeedRv);
+              mMovieFeedRv.setAdapter(animatorAdapter);
           }
     }
 }
