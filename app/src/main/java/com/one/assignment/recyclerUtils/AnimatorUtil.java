@@ -1,4 +1,4 @@
-package com.one.assignment.utils;
+package com.one.assignment.recyclerUtils;
 
 import android.animation.Animator;
 import android.support.annotation.NonNull;

@@ -1,4 +1,4 @@
-package com.one.assignment.utils;
+package com.one.assignment.recyclerUtils;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.one.assignment.utils.ViewAnimator;
 
 /**
  * Created by Sunny on 21-05-2016.

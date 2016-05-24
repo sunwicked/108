@@ -11,14 +11,16 @@ import android.widget.TextView;
 import com.one.assignement.R;
 import com.one.assignment.models.MovieFeed;
 import com.one.assignment.models.Result;
+import com.one.assignment.recyclerUtils.ItemTouchHelperAdapter;
 import com.squareup.picasso.Picasso;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by Sunny on 23-04-2016.
  */
-public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerViewAdapter.MovieViewHolder> {
+public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerViewAdapter.MovieViewHolder> implements ItemTouchHelperAdapter {
 
     private List<Result> mMovieList;
     private Context mContext;
@@ -52,6 +54,27 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
     @Override
     public int getItemCount() {
         return mMovieList.size();
+    }
+
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(mMovieList, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(mMovieList, i, i - 1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);
+        return true;
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        mMovieList.remove(position);
+        notifyItemRemoved(position);
     }
 
     class MovieViewHolder extends RecyclerView.ViewHolder {
