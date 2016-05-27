@@ -20,12 +20,12 @@ import java.util.List;
 /**
  * Created by Sunny on 23-04-2016.
  */
-public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerViewAdapter.MovieViewHolder> implements ItemTouchHelperAdapter {
+public class FeedAdapterRv extends RecyclerView.Adapter<FeedAdapterRv.MovieViewHolder> implements ItemTouchHelperAdapter {
 
     private List<Result> mMovieList;
     private Context mContext;
 
-    public FeedRecyclerViewAdapter(Context context, MovieFeed feed) {
+    public FeedAdapterRv(Context context, MovieFeed feed) {
         mContext = context;
         mMovieList = feed.getResults();
     }

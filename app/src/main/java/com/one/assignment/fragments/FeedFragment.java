@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.one.assignement.R;
 import com.one.assignment.LabConstants;
-import com.one.assignment.adapters.FeedRecyclerViewAdapter;
+import com.one.assignment.adapters.FeedAdapterRv;
 import com.one.assignment.models.MovieFeed;
 import com.one.assignment.recyclerUtils.AlphaAnimatorAdapter;
 import com.one.assignment.recyclerUtils.SimpleItemTouchHelperCallback;
@@ -26,7 +26,7 @@ public class FeedFragment extends Fragment {
 
     private MovieFeed feed;
 
-    FeedRecyclerViewAdapter mFeedAdapter;
+    FeedAdapterRv mFeedAdapter;
 
 
     @Override
@@ -69,7 +69,7 @@ public class FeedFragment extends Fragment {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             feed = bundle.getParcelable(LabConstants.KEY_LOCAL);
-            mFeedAdapter = new FeedRecyclerViewAdapter(getContext(), feed);
+            mFeedAdapter = new FeedAdapterRv(getContext(), feed);
 
             ItemTouchHelper.Callback callback =
                     new SimpleItemTouchHelperCallback(mFeedAdapter);
